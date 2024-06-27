@@ -1,17 +1,38 @@
 <% layout("/layouts/boilerplate") %>
-<body>
-    <h3>Listing Details : </h3>
-    <ul>
 
-        <li> <%= listing.title %></li>
-        <li> <%= listing.description %></li>
-        <li>&#8377; <%= (listing.price).toLocaleString("en-IN") %></li>
-        <li> <%= listing.location %></li>
-        <li> <%= listing.country %></li>
-    </ul>
-    <a href="/listings/<%= listing._id %>/edit"> <button class="btn btn-outline-secondary"> Edit This Listing</button></a>
-    <br><br>
-    <form method="post" action="/listings/<%= listing._id %>?_method=DELETE">
-        <button  class="btn btn-outline-danger"> Delete this listing</button>
-    </form>
-</body>
+    <body>
+        <div class="container mt-4">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <h3>Listing Details:</h3>
+                    <ul class="list-group mb-3">
+                        <li class="list-group-item"><strong>Title:</strong>
+                            <%= listing.title %>
+                        </li>
+                        <div class="card mb-3 mt-3">
+                            <img src="<%= listing.image %>" class="card-img-top img-fluid" alt="listing_img"
+                                style="object-fit: cover; width: 100%; height: 20rem;">
+                        </div>
+                        <li class="list-group-item"><strong>Description:</strong>
+                            <%= listing.description %>
+                        </li>
+                        <li class="list-group-item">&#8377; <%= (listing.price).toLocaleString("en-IN") %>
+                        </li>
+                        <li class="list-group-item"><strong>Location:</strong>
+                            <%= listing.location %>
+                        </li>
+                        <li class="list-group-item"><strong>Country:</strong>
+                            <%= listing.country %>
+                        </li>
+                    </ul>
+                    <a href="/listings/<%= listing._id %>/edit">
+                        <button class="btn btn-outline-secondary mt-3">Edit This Listing</button>
+                    </a>
+                    <br><br>
+                    <form method="post" action="/listings/<%= listing._id %>?_method=DELETE">
+                        <button class="btn btn-outline-danger">Delete this listing</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </body>

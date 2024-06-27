@@ -4,19 +4,20 @@ const mongoose = require("mongoose");
 const path = require("path");
 const Listing = require("./models/listing.js");
 const methodOverride = require("method-override");
-
 const ejsMate = require("ejs-mate");
-
+const wrapAsync = require("./utils/wrapAsync.js");
+const ExpressError = require("./utils/ExpressError.js");
 const MONGO_URL = "mongodb://127.0.0.1:27017/YoursDestination";
+
 main()
     .then(() => {
-    console.log("connected to DataBase");
-    
-}).catch((err) => {
-    console.log(err);
-});
+        console.log("connected to DataBase");
+    })
+    .catch((err) => {
+        console.log(err);
+    });
 
- async function main() {
+async function main() {
     await mongoose.connect(MONGO_URL);
 }
 
@@ -25,84 +26,84 @@ app.set("views", path.join(__dirname, "views"));
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 app.engine('ejs', ejsMate);
-
 app.use(express.static(path.join(__dirname, "/public")));
 
-//******************* ---------- ************************** */
-app.listen(8080, () => {
-    console.log("server is listining to 8080 ");
-});
+function validateListing(req, res, next) {
+    const { listing } = req.body;
+    if (!listing.title || !listing.price || !listing.location || !listing.country) {
+        throw new ExpressError(400, "All fields are required");
+    }
+    if (isNaN(listing.price)) {
+        throw new ExpressError(400, "Price must be a number");
+    }
+    next();
+}
 
-// app.get("/testListing" ,async (req, res) => {
-//     let sample = new Listing({
-//         title: "my new villa",
-//         description: "by the beach",
-//         price: 1200,
-//         location: "Banglore east-west",
-//         country:"India"
-//     })
-//     await sample.save();
-//     console.log("sample saved successful");
-//     res.send("successful testing");
-// });
-
-//index route main page
-app.get("/listings", async (req, res) => {
+// Index route main page
+app.get("/listings", wrapAsync(async (req, res) => {
     const allListing = await Listing.find({});
     res.render("listings/index.ejs", { allListing });
+}));
 
-});
-
-//new route
+// New route
 app.get("/listings/new", (req, res) => {
-    
     res.render("listings/new.ejs");
 });
 
-
-// show deatils of specific home
-app.get("/listings/:id", async (req, res) => {
-    
-    let { id } = req.params;
+// Show details of specific listing
+app.get("/listings/:id", wrapAsync(async (req, res) => {
+    const { id } = req.params;
     const listing = await Listing.findById(id);
-
+    if (!listing) {
+        throw new ExpressError(404, "Listing not found");
+    }
     res.render("listings/show.ejs", { listing });
+}));
 
-});
-
-//create route
-app.post("/listings" , async (req, res) => {
+// Create route
+app.post("/listings", validateListing, wrapAsync(async (req, res) => {
     const newListing = new Listing(req.body.listing);
-   await  newListing.save();
+    await newListing.save();
     res.redirect("/listings");
-});
+}));
 
-//edit route
-app.get("/listings/:id/edit",async (req, res) => {
-      let { id } = req.params;
+// Edit route
+app.get("/listings/:id/edit", wrapAsync(async (req, res) => {
+    const { id } = req.params;
     const listing = await Listing.findById(id);
+    if (!listing) {
+        throw new ExpressError(404, "Listing not found");
+    }
     res.render("listings/edit.ejs", { listing });
-});
+}));
 
-//  update route
-app.put("/listings/:id", async (req, res) => {
-    let { id } = req.params;
+// Update route
+app.put("/listings/:id", validateListing, wrapAsync(async (req, res) => {
+    const { id } = req.params;
     await Listing.findByIdAndUpdate(id, { ...req.body.listing });
     res.redirect(`/listings/${id}`);
-});
+}));
 
-//delete route
-
-app.delete("/listings/:id", async (req, res) => {
-    let { id } = req.params;
-    let deletedListing = await Listing.findByIdAndDelete(id);
-    console.log(deletedListing);
+// Delete route
+app.delete("/listings/:id", wrapAsync(async (req, res) => {
+    const { id } = req.params;
+    await Listing.findByIdAndDelete(id);
     res.redirect("/listings");
-});
-
-
+}));
 
 app.get("/", (req, res) => {
-    res.send("you are at main page");
+    res.send("You are at the main page");
 });
 
+app.all("*", (req, res, next) => {
+    next(new ExpressError(404, "Page not found"));
+});
+
+app.use((err, req, res, next) => {
+    const { statusCode = 500, message = "Something went wrong" } = err;
+    res.status(statusCode).send(message);
+});
+
+app.listen(8080, () => {
+    console.log("Server is listening on port 8080");
+});
