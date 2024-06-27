@@ -7,7 +7,7 @@
     
         <input type="text" name="listing[title]" value="<%= listing.title%>">
         <br><br>
-        <textarea value="<%= listing.description %>" type="text" name="listing[description]"> </textarea>
+        <textarea  placeholder="Write Description" name="listing[description]" value="<%= listing.description %>" > </textarea>
         <br><br>
         <input type="text" name="listing[image]" value="<%=listing.image%>">
         <br><br>
@@ -18,6 +18,6 @@
         <input type="text" name="listing[location]" value="<%=listing.location%>">
         <br><br>
     
-        <button>Update</button>
+        <button class="btn btn-outline-success">Update</button>
     </form>
 </body>
