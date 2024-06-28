@@ -51,8 +51,8 @@ const validateListing = (req, res, next) => {
         next();
 };
 
-const validatereview = (req, res, next) => {
-    let { error } = reviewShema.validate(req.body);
+const validateReview = (req, res, next) => {
+    let { error } = reviewSchema.validate(req.body);
    
     if (error) {
         throw new ExpressError(400, error);
@@ -77,7 +77,7 @@ app.get("/listings/new", (req, res) => {
 // Show details of specific listing
 app.get("/listings/:id", wrapAsync(async (req, res) => {
     const { id } = req.params;
-    const listing = await Listing.findById(id);
+    const listing = await Listing.findById(id).populate("reviews");
     if (!listing) {
         throw new ExpressError(404, "Listing not found");
     }
@@ -118,7 +118,7 @@ app.delete("/listings/:id", wrapAsync(async (req, res) => {
 
 //review route
 
-app.post("/listings/:id/reviews",validatereview, wrapAsync(async (req, res) => {
+app.post("/listings/:id/reviews",validateReview, wrapAsync(async (req, res) => {
    
     let listing = await Listing.findById(req.params.id);
     let newReview = new Review(req.body.review);
