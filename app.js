@@ -9,7 +9,7 @@ const MONGO_URL = "mongodb://127.0.0.1:27017/YoursDestination";
 const listings = require("./routes/listing.js");
 const reviews = require("./routes/review.js");
 const session = require("express-session");
-
+const flash = require("connect-flash");
 
 //------------------------------------***************************************-----------------------------------------
 main()
@@ -41,6 +41,8 @@ const sessionOption = {
 
 //-----------------------------------*************************************************----------------------------------------
 
+
+
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.urlencoded({ extended: true }));
@@ -49,20 +51,19 @@ app.engine('ejs', ejsMate);
 app.use(express.static(path.join(__dirname, "/public")));
 
 app.use(session(sessionOption));
+app.use(flash());
 
-
+  
+app.use((req, res, next) => {
+    res.locals.success = req.flash("success");
+    res.locals.error = req.flash("error");
+    next(); 
+})
 
 //------------ACQURING THE LISTING AND REVIEW ROUTES--------------------------
 app.use("/listings", listings);
 app.use("/listings/:id/reviews",reviews);
 //-------------****************************----------------------------------
-
-
-//---------------INDEX ROUTE-----------------------------------------------------
-app.get("/", (req, res) => {
-    res.send("You are at the main page");
-});
-//-----------------**********************************-------------------------------------
 
 
 
