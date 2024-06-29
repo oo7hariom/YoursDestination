@@ -16,6 +16,7 @@ const validateListing = (req, res, next) => {
 };
 
 
+//----------------------------ROUTES---------------------------------------------------
 
 
 // Index route main page
@@ -71,5 +72,7 @@ router.post("/",validateListing, wrapAsync(async (req, res) => {
     res.redirect("/listings");
 }));
 
+
+//----------------------------*****************************-------------------------------
 
 module.exports = router;
