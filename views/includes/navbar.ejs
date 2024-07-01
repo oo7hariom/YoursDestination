@@ -10,9 +10,20 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
             <div class="navbar-nav">
-                <a class="nav-link " href="/">Home</a>
-                <a class="nav-link" href="/listings">All Listings</a>
-                <a class="nav-link" href="/listings/new">Add New Listings</a>
+                <a class="nav-link " href="/"> <b>Home</b></a>
+                <a class="nav-link" href="/listings"><b>All Listings</b></a>
+                <a class="nav-link" href="/listings/new"> <b>Add New Listings</b></a>
+               
+            </div>
+            <div class="navbar-nav ms-auto">
+                <% if(!currUser) {%>
+                <a class="nav-link " href="/signup"><b>Sign-Up</b></a>
+                <a class="nav-link" href="/login"> <b>Log-In</b></a>
+                <% } %>
+
+                <% if(currUser) { %>
+                <a class="nav-link" href="/logout"><b>Log-Out</b></a>
+                <% } %>
                
             </div>
         </div>
