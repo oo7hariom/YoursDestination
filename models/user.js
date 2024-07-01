@@ -1,21 +1,16 @@
-
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const passportLocalMongoose = require("passport-local-mongoose");
+const passportLocalMongoose = require('passport-local-mongoose');
 
-
-
-//passport-local-mongoose it will automatically add the username and the p
-//password(hashed and salted) field into the the schema so you dont need to it.
-
+// passport-local-mongoose will add username and hashed password fields automatically
 const userSchema = new Schema({
-
     email: {
         type: String,
         required: true,
+        unique: true
     }
 });
 
 userSchema.plugin(passportLocalMongoose);
 
-module.exports = mongoose.model("User", userSchema);
+module.exports = mongoose.model('User', userSchema);
